@@ -36,7 +36,7 @@ interface ChatHistoryItem {
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -196,7 +196,13 @@ async function downloadPdf(): Promise<void> {
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
         const data = await response.json();
 
-        const blob = await (await fetch(`data:application/pdf;base64,${data.pdfBase64}`)).blob();
+        const byteCharacters = atob(data.pdfBase64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;

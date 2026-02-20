@@ -12,7 +12,13 @@ const httpServerManager = new HttpServerManager(manager, {
     port: 3000,
     logger,
     docsPath: '/_meta/routes',
-    apiPrefix: '/api'
+    apiPrefix: '/api',
+    staticFiles: [
+        {
+            directory: path.join(__dirname, '../dist'),
+            path: '/',
+        },
+    ],
 });
 
 async function main() {
