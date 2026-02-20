@@ -152,6 +152,8 @@ export const SubmitSurvayAction: ServiceAction<SubmitSurvayInput, SubmitSurvayOu
             }
         }
 
+        const allAnswers = getSurvey(surveyId)?.answers || [];
+
         const promptState: AdapterSystemPromptState = {
             messages: [],
             model: 'qwen3:4b-instruct',
@@ -174,7 +176,7 @@ Output only the JSON object. No markdown, no extra text.`,
 
         promptState.messages.push({
             role: 'user',
-            content: JSON.stringify(answers),
+            content: JSON.stringify(allAnswers),
         });
 
         const result = await adapter.prompt(promptState);

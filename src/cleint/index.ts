@@ -178,6 +178,42 @@ async function fetchSurveyRecord(id: string): Promise<any> {
     return response.json();
 }
 
+async function downloadPdf(): Promise<void> {
+    if (!currentSurveyId) return;
+
+    // Show some loading state on the button
+    const $btn = document.getElementById('btn-download-pdf') as HTMLButtonElement;
+    const originalText = $btn.textContent;
+    $btn.disabled = true;
+    $btn.textContent = 'Generating...';
+
+    try {
+        const response = await fetch(`${API_URL}/survay-pdf`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ surveyId: currentSurveyId }),
+        });
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const data = await response.json();
+
+        const blob = await (await fetch(`data:application/pdf;base64,${data.pdfBase64}`)).blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = data.filename || 'Survey_Report.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (err) {
+        console.error(err);
+        showError('Failed to generate PDF. Please try again.');
+    } finally {
+        $btn.disabled = false;
+        $btn.textContent = originalText;
+    }
+}
+
 // ─── Question rendering ───────────────────────────────────────────────────────
 
 function cleanLabel(raw?: string | null): string {
@@ -521,6 +557,7 @@ document.getElementById('btn-get-summary')!.addEventListener('click', showSummar
 
 // Results screen
 document.getElementById('btn-open-chat')!.addEventListener('click', openChat);
+document.getElementById('btn-download-pdf')!.addEventListener('click', downloadPdf);
 document.getElementById('btn-results-more')!.addEventListener('click', () => startNewRound(false));
 document.getElementById('btn-show-review')!.addEventListener('click', openReview);
 document.getElementById('btn-restart')!.addEventListener('click', () => {
