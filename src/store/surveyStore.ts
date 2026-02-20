@@ -87,12 +87,12 @@ export function createSurvey(topic: string): SurveyRecord {
     return record;
 }
 
-/** Append new Q&A pairs to an existing survey. */
-export function appendAnswers(surveyId: string, answers: StoredAnswer[]): void {
+/** Set the full list of answers for a survey (overwrites existing). */
+export function setAnswers(surveyId: string, answers: StoredAnswer[]): void {
     const store = loadStore();
     const record = store.surveys[surveyId];
     if (!record) throw new Error(`Survey ${surveyId} not found`);
-    record.answers.push(...answers);
+    record.answers = answers;
     saveStore(store);
 }
 

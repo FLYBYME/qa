@@ -4,7 +4,7 @@ import { adapter } from '../main';
 import { AdapterSystemPromptState } from 'tool-ms/dist/lib/Adapter';
 import {
     createSurvey,
-    appendAnswers,
+    setAnswers,
     saveSummary,
     getSurvey,
     listSurveys,
@@ -59,9 +59,9 @@ export const SurvayAction: ServiceAction<SurvayInput, SurvayOutput> = {
             surveyId = record.id;
         }
 
-        // Persist any new answers that arrived with this request
+        // Persist the cumulative answers that arrived with this request
         if (answers && answers.length > 0) {
-            appendAnswers(surveyId, answers);
+            setAnswers(surveyId, answers);
         }
 
         // Build the LLM prompt
@@ -142,6 +142,15 @@ export const SubmitSurvayAction: ServiceAction<SubmitSurvayInput, SubmitSurvayOu
     rest: { method: 'POST', path: '/submit-survay' },
     handler: async (ctx: Context<SubmitSurvayInput>): Promise<SubmitSurvayOutput> => {
         const { surveyId, answers } = ctx.params;
+
+        // Persist the final list of answers before/during summary generation
+        if (answers && answers.length > 0) {
+            try {
+                setAnswers(surveyId, answers);
+            } catch (err) {
+                console.warn('Could not persist final answers:', err);
+            }
+        }
 
         const promptState: AdapterSystemPromptState = {
             messages: [],

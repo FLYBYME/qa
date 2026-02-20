@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Survey</title>
-    <meta name="description" content="AI-powered adaptive daily wellness survey">
+    <meta name="description" content="AI-powered adaptive survey with post-summary chat">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-    <!-- Splash / topic landing -->
+    <!-- ── Splash ─────────────────────────────────────────────────────────── -->
     <div id="screen-splash" class="screen active">
         <div class="card splash-card">
             <div class="splash-icon">✦</div>
@@ -33,11 +33,28 @@
                     maxlength="120" />
             </div>
 
-            <button id="btn-start" class="btn btn-primary btn-large" disabled>Start Survey</button>
+            <div class="splash-actions">
+                <button id="btn-start" class="btn btn-primary btn-large" disabled>Start Survey</button>
+                <button id="btn-show-history" class="btn btn-secondary btn-large">Browse History</button>
+            </div>
         </div>
     </div>
 
-    <!-- Loading screen -->
+    <!-- ── History (List past surveys) ────────────────────────────────────── -->
+    <div id="screen-history" class="screen">
+        <div class="card history-card">
+            <div class="history-header">
+                <button id="btn-history-back" class="btn btn-ghost">← Back</button>
+                <h2>Survey History</h2>
+            </div>
+            <div id="history-list" class="history-list">
+                <!-- Survey items will be injected here -->
+                <p class="empty-msg">No history found.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Loading ────────────────────────────────────────────────────────── -->
     <div id="screen-loading" class="screen">
         <div class="card loading-card">
             <div class="spinner"></div>
@@ -45,7 +62,7 @@
         </div>
     </div>
 
-    <!-- Single question screen -->
+    <!-- ── Question (one at a time) ───────────────────────────────────────── -->
     <div id="screen-question" class="screen">
         <div class="progress-bar-wrap">
             <div id="progress-bar" class="progress-bar"></div>
@@ -56,13 +73,13 @@
         <div class="card question-card">
             <p id="question-label" class="question-text"></p>
 
-            <!-- Boolean answer -->
+            <!-- Boolean -->
             <div id="answer-boolean" class="answer-area hidden">
                 <button class="btn btn-choice" data-value="yes">Yes</button>
                 <button class="btn btn-choice" data-value="no">No</button>
             </div>
 
-            <!-- Scale answer -->
+            <!-- Scale -->
             <div id="answer-scale" class="answer-area hidden">
                 <div class="scale-labels">
                     <span id="scale-min-label" class="scale-label-text"></span>
@@ -76,13 +93,13 @@
                     </div>
                 </div>
                 <div id="scale-value-display" class="scale-value-display">5</div>
-                <button id="btn-scale-next" class="btn btn-primary" style="margin-top:1.5rem; width:100%;">Next
+                <button id="btn-scale-next" class="btn btn-primary" style="margin-top:1.5rem;width:100%;">Next
                     →</button>
             </div>
         </div>
     </div>
 
-    <!-- End-of-round decision screen -->
+    <!-- ── End-of-round decision ──────────────────────────────────────────── -->
     <div id="screen-decision" class="screen">
         <div class="card decision-card">
             <div class="decision-icon">🎉</div>
@@ -95,7 +112,7 @@
         </div>
     </div>
 
-    <!-- Results screen -->
+    <!-- ── Results ────────────────────────────────────────────────────────── -->
     <div id="screen-results" class="screen">
         <div class="results-header">
             <div class="results-icon">✦</div>
@@ -113,11 +130,46 @@
             <h3>Recommendations</h3>
             <ul id="result-recommendations"></ul>
         </div>
-        <button id="btn-restart" class="btn btn-secondary" style="margin-top:1rem; width:100%;">Start a new
-            survey</button>
+        <div class="results-actions">
+            <button id="btn-open-chat" class="btn btn-primary">💬 Chat with AI</button>
+            <button id="btn-results-more" class="btn btn-secondary">➕ Ask follow-up questions</button>
+            <button id="btn-show-review" class="btn btn-secondary">📝 Review Answers</button>
+            <button id="btn-restart" class="btn btn-secondary">Start new survey</button>
+        </div>
     </div>
 
-    <!-- Error toast -->
+    <!-- ── Review (List all answers) ──────────────────────────────────────── -->
+    <div id="screen-review" class="screen">
+        <div class="card review-card">
+            <div class="review-header">
+                <button id="btn-review-back" class="btn btn-ghost">← Back</button>
+                <h2>Answer Review</h2>
+            </div>
+            <div id="review-list" class="review-list">
+                <!-- Q&A pairs will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Chat ───────────────────────────────────────────────────────────── -->
+    <div id="screen-chat" class="screen">
+        <div class="chat-header">
+            <button id="btn-chat-back" class="btn btn-ghost">← Summary</button>
+            <span id="chat-topic-label" class="chat-topic"></span>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <div class="chat-welcome">
+                <span class="chat-welcome-icon">✦</span>
+                <p>I have full context on your survey. Ask me anything!</p>
+            </div>
+        </div>
+        <div class="chat-input-row">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Ask something…" maxlength="500" />
+            <button id="btn-chat-send" class="btn btn-primary">Send</button>
+        </div>
+    </div>
+
+    <!-- ── Error toast ─────────────────────────────────────────────────────── -->
     <div id="error-toast" class="error-toast hidden">
         <span id="error-message"></span>
     </div>
